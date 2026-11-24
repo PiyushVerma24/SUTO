@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SUTO - Burrito Bowl Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{--g:#1f5a2b;--g2:#2e7d32;--bg:#e6f4d7;--line:#cfe3bf;--err:#c62828}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Outfit',system-ui,sans-serif;color:#1d2b1d;background:linear-gradient(#f3faea,#d9efc3)}
+  .wrap{max-width:860px;margin:0 auto;background:#eef8e4;box-shadow:0 0 30px rgba(31,90,43,.15)}
+  .hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:22px 24px 18px;background:linear-gradient(120deg,#f8f4e2,#e4f2d0);border-bottom:1px solid var(--line);overflow:hidden}
+  .brand{text-align:left}
+  .logo{position:relative;display:inline-block;font-weight:700;font-size:78px;line-height:1;letter-spacing:3px;color:var(--g)}
+  .logo svg{position:absolute;right:-6px;top:-22px;width:46px;height:46px}
+  .sub{font-weight:600;letter-spacing:3px;font-size:13px;color:var(--g);margin-top:8px}
+  .rule{height:2px;width:70%;background:var(--g);opacity:.6;margin:10px 0 8px}
+  .tag{font-family:'Caveat',cursive;font-size:30px;color:var(--g)}
+  .bowl{flex:0 0 auto;width:210px;max-width:38%}
+  .pad{padding:14px 16px 8px}
+  .intro{background:#f4fbec;border:1px solid var(--line);border-radius:14px;text-align:center;padding:18px 16px 16px;margin-bottom:14px}
+  .intro h1{margin:0 0 8px;color:var(--g);font-size:26px}
+  .intro p{margin:4px 0;font-size:15.5px;line-height:1.45}
+  .pill{display:inline-block;margin-top:10px;background:var(--g2);color:#fff;font-weight:600;border-radius:999px;padding:8px 18px;font-size:14.5px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card.full{grid-column:1/-1}
+  .card.err{border-color:var(--err);box-shadow:0 0 0 2px rgba(198,40,40,.12)}
+  .q{font-weight:600;font-size:16px;margin:0 0 10px;color:#14301a}
+  .q .req{color:var(--err)}
+  .hint{font-size:13px;color:#5b6b5b;margin:-4px 0 8px}
+  input[type=text],input[type=email],input[type=tel],textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid #c9d6c0;border-radius:8px;background:#fbfdf9}
+  textarea{min-height:70px;resize:vertical}
+  input:focus,textarea:focus{outline:2px solid var(--g2);outline-offset:0}
+  .opt{display:flex;align-items:center;gap:10px;padding:5px 0;cursor:pointer;font-size:15.5px}
+  .opt input{accent-color:var(--g2);width:18px;height:18px;margin:0}
+  .inline{display:flex;flex-wrap:wrap;gap:6px 22px}
+  .stars{display:flex;justify-content:space-between;gap:4px}
+  .star{flex:1;text-align:center;cursor:pointer;font-size:12.5px;color:#444}
+  .star input{position:absolute;opacity:0;pointer-events:none}
+  .star .s{display:block;font-size:34px;line-height:1.1;color:#e2c14b;transition:transform .12s}
+  .star .s::before{content:"\2606"}
+  .star:hover .s{transform:scale(1.15)}
+  .star input:checked+.s::before{content:"\2605"}
+  .star input:focus-visible+.s{outline:2px solid var(--g2);border-radius:6px}
+  .msg{display:none;margin:14px 0 0;padding:12px 14px;border-radius:10px;font-weight:500;font-size:15px}
+  .msg.bad{display:block;background:#fdecea;color:#8e1b1b;border:1px solid #f3b8b2}
+  .actions{text-align:center;padding:18px 0 6px}
+  button{font:inherit;font-weight:600;font-size:17px;background:var(--g);color:#fff;border:0;border-radius:999px;padding:13px 44px;cursor:pointer;box-shadow:0 4px 12px rgba(31,90,43,.3)}
+  button:hover{background:var(--g2)}
+  button:disabled{opacity:.6;cursor:wait}
+  .foot{text-align:center;padding:14px 10px 26px;color:var(--g)}
+  .foot .t{font-family:'Caveat',cursive;font-size:30px}
+  .foot .s{font-size:14px;font-weight:600;margin-top:2px}
+  #thanks{display:none;text-align:center;padding:50px 20px 30px}
+  #thanks .tick{width:84px;height:84px;border-radius:50%;background:var(--g2);color:#fff;font-size:50px;line-height:84px;margin:0 auto 18px}
+  #thanks h2{color:var(--g);font-size:28px;margin:0 0 10px}
+  #thanks p{font-size:17px;margin:6px 0}
+  .hp{position:absolute;left:-9999px;opacity:0}
+  #freqCard{display:none}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}.intro h1{font-size:22px}.logo{font-size:60px}.tag{font-size:24px}.bowl{width:130px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="brand">
+      <div class="logo">SUTO
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 44C24 30 18 20 6 16c2 14 8 22 18 28z" fill="#2e7d32"/><path d="M24 44C26 28 34 18 44 14c0 14-8 24-20 30z" fill="#1f5a2b"/></svg>
+      </div>
+      <div class="sub">FRESH &bull; WHOLESOME &bull; DELICIOUS</div>
+      <div class="rule"></div>
+      <div class="tag">Eat Fresh. Feel Good. Live Well.</div>
+    </div>
+    <svg class="bowl" viewBox="0 0 220 150" role="img" aria-label="Burrito bowl">
+      <circle cx="70" cy="62" r="13" fill="#f2c230"/><circle cx="96" cy="48" r="13" fill="#f2c230"/><circle cx="124" cy="52" r="13" fill="#2b2b2b"/>
+      <circle cx="150" cy="62" r="13" fill="#2b2b2b"/><rect x="80" y="40" width="26" height="26" rx="5" fill="#8cc152" transform="rotate(12 93 53)"/>
+      <rect x="112" y="34" width="24" height="24" rx="5" fill="#9ccc65" transform="rotate(-10 124 46)"/><circle cx="58" cy="76" r="12" fill="#e74c3c"/>
+      <circle cx="110" cy="70" r="12" fill="#e74c3c"/><circle cx="160" cy="80" r="12" fill="#e74c3c"/><circle cx="84" cy="82" r="11" fill="#f2c230"/>
+      <path d="M170 38l24-18 8 14z" fill="#a5d63f"/>
+      <path d="M20 80h180c0 38-34 62-90 62S20 118 20 80z" fill="#e9d9b8" stroke="#c9b68a" stroke-width="3"/>
+    </svg>
+  </div>
+
+  <div class="pad" id="formView">
+    <div class="intro">
+      <h1>SUTO &ndash; Mexican Burrito Bowl Feedback</h1>
+      <p>Thank you for being a part of SUTO&rsquo;s tasting experience! &#128154;</p>
+      <p>We hope you enjoyed our Mexican Burrito Bowl. Since we are just starting our journey, your honest feedback means a lot to us.</p>
+      <span class="pill">Please take 2 minutes to answer these questions. We genuinely appreciate your suggestions!</span>
+    </div>
+
+    <form id="f" novalidate autocomplete="on">
+      <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="grid">
+        <div class="card full" data-q="name">
+          <p class="q">1. Your Name <span class="req">*</span></p>
+          <input type="text" id="name" maxlength="100" placeholder="Enter your name" autocomplete="name">
+        </div>
+
+        <div class="card full" data-q="contact">
+          <p class="q">2. How can we reach you? <span class="req">*</span></p>
+          <p class="hint">Please give your email or phone number (at least one). This is only used to make sure each person responds once.</p>
+          <div class="grid">
+            <input type="email" id="email" maxlength="200" placeholder="Email" autocomplete="email" inputmode="email">
+            <input type="tel" id="phone" maxlength="20" placeholder="Phone (10 digits)" autocomplete="tel" inputmode="tel">
+          </div>
+        </div>
+
+        <div class="card full" data-q="taste">
+          <p class="q">3. How would you rate the overall taste? <span class="req">*</span></p>
+          <div class="stars" role="radiogroup" aria-label="Taste rating">
+            <label class="star"><input type="radio" name="taste" value="Excellent"><span class="s"></span>Excellent</label>
+            <label class="star"><input type="radio" name="taste" value="Very Good"><span class="s"></span>Very Good</label>
+            <label class="star"><input type="radio" name="taste" value="Good"><span class="s"></span>Good</label>
+            <label class="star"><input type="radio" name="taste" value="Average"><span class="s"></span>Average</label>
+            <label class="star"><input type="radio" name="taste" value="Needs Improvement"><span class="s"></span>Needs Improvement</label>
+          </div>
+        </div>
+
+        <div class="card" data-q="portion">
+          <p class="q">4. How did you find the portion size?</p>
+          <label class="opt"><input type="radio" name="portion" value="More than enough">More than enough</label>
+          <label class="opt"><input type="radio" name="portion" value="Just right">Just right</label>
+          <label class="opt"><input type="radio" name="portion" value="Slightly less">Slightly less</label>
+          <label class="opt"><input type="radio" name="portion" value="Too much">Too much</label>
+        </div>
+
+        <div class="card" data-q="freshness">
+          <p class="q">5. How did you find the freshness of the ingredients?</p>
+          <label class="opt"><input type="radio" name="freshness" value="Excellent">Excellent</label>
+          <label class="opt"><input type="radio" name="freshness" value="Very Good">Very Good</label>
+          <label class="opt"><input type="radio" name="freshness" value="Average">Average</label>
+          <label class="opt"><input type="radio" name="freshness" value="Needs Improvement">Needs Improvement</label>
+        </div>
+
+        <div class="card" data-q="flavour">
+          <p class="q">6. How was the combination of flavours?</p>
+          <label class="opt"><input type="radio" name="flavour" value="Perfectly balanced">Perfectly balanced</label>
+          <label class="opt"><input type="radio" name="flavour" value="Slightly spicy">Slightly spicy</label>
+          <label class="opt"><input type="radio" name="flavour" value="Too bland">Too bland</label>
+          <label class="opt"><input type="radio" name="flavour" value="Too tangy">Too tangy</label>
+          <label class="opt"><input type="radio" name="flavour" value="Needs improvement">Needs improvement</label>
+        </div>
+
+        <div class="card" data-q="dressing">
+          <p class="q">7. How did you find the dressing/sauce?</p>
+          <label class="opt"><input type="radio" name="dressing" value="Loved it!">Loved it!</label>
+          <label class="opt"><input type="radio" name="dressing" value="Good">Good</label>
+          <label class="opt"><input type="radio" name="dressing" value="Too much">Too much</label>
+          <label class="opt"><input type="radio" name="dressing" value="Too little">Too little</label>
+          <label class="opt"><input type="radio" name="dressing" value="Could be improved">Could be improved</label>
+        </div>
+
+        <div class="card">
+          <p class="q">8. What did you like the most about the bowl?</p>
+          <textarea id="liked" maxlength="1500" placeholder="Tell us what you loved..."></textarea>
+        </div>
+
+        <div class="card">
+          <p class="q">9. Is there anything you would like us to improve?</p>
+          <textarea id="improve" maxlength="1500" placeholder="Share your suggestions..."></textarea>
+        </div>
+
+        <div class="card full" data-q="orderAgain">
+          <p class="q">10. Would you order this bowl again? <span class="req">*</span></p>
+          <div class="inline">
+            <label class="opt"><input type="radio" name="orderAgain" value="Definitely!">Definitely!</label>
+            <label class="opt"><input type="radio" name="orderAgain" value="Maybe">Maybe</label>
+            <label class="opt"><input type="radio" name="orderAgain" value="Not sure">Not sure</label>
+            <label class="opt"><input type="radio" name="orderAgain" value="No">No</label>
+          </div>
+        </div>
+
+        <div class="card full" data-q="subscribe">
+          <p class="q">11. Would you be interested in a regular SUTO subscription (fresh bowls and salads delivered on a schedule)?</p>
+          <div class="inline">
+            <label class="opt"><input type="radio" name="subscribe" value="Yes">Yes</label>
+            <label class="opt"><input type="radio" name="subscribe" value="Maybe">Maybe</label>
+            <label class="opt"><input type="radio" name="subscribe" value="Not right now">Not right now</label>
+          </div>
+        </div>
+
+        <div class="card full" id="freqCard" data-q="frequency">
+          <p class="q">12. How often would you be happy to subscribe?</p>
+          <div class="inline">
+            <label class="opt"><input type="radio" name="frequency" value="Every weekday">Every weekday</label>
+            <label class="opt"><input type="radio" name="frequency" value="2-3 times a week">2-3 times a week</label>
+            <label class="opt"><input type="radio" name="frequency" value="Once a week">Once a week</label>
+            <label class="opt"><input type="radio" name="frequency" value="Every 2 weeks">Every 2 weeks</label>
+            <label class="opt"><input type="radio" name="frequency" value="Monthly">Monthly</label>
+          </div>
+        </div>
+
+        <div class="card full" data-q="recommend">
+          <p class="q">13. Would you recommend SUTO to your friends and family? <span class="req">*</span></p>
+          <div class="inline">
+            <label class="opt"><input type="radio" name="recommend" value="Absolutely!">Absolutely!</label>
+            <label class="opt"><input type="radio" name="recommend" value="Maybe">Maybe</label>
+            <label class="opt"><input type="radio" name="recommend" value="Not at the moment">Not at the moment</label>
+          </div>
+        </div>
+
+        <div class="card full">
+          <p class="q">14. Any additional suggestions or comments?</p>
+          <textarea id="comments" maxlength="1500" placeholder="We'd love to hear more..."></textarea>
+        </div>
+      </div>
+
+      <div id="msg" class="msg" role="alert"></div>
+      <div class="actions"><button type="submit" id="submit">Submit feedback</button></div>
+    </form>
+  </div>
+
+  <div id="thanks" role="status">
+    <div class="tick">&#10003;</div>
+    <h2>Thank you! Your response has been recorded.</h2>
+    <p>We really appreciate you taking the time to share your feedback.</p>
+    <p>You can now close this page.</p>
+  </div>
+
+  <div class="foot"><div class="t">Thank you for helping SUTO grow! &#128154;</div><div class="s">&mdash; Team SUTO &mdash;</div></div>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzHVZIc7bqUwTLtTtktVae_CUa0GbT5Y_BWOVb1DTaTe0AJEVzJoJZ5XF_1cE25XEAgfA/exec';
+  var $ = function(id){return document.getElementById(id)};
+  var form = $('f'), msg = $('msg'), btn = $('submit');
+
+  function val(name){ var c=form.querySelector('input[name="'+name+'"]:checked'); return c?c.value:''; }
+  function mark(q, bad){ var el=form.querySelector('[data-q="'+q+'"]'); if(el) el.classList.toggle('err', !!bad); return el; }
+  function showMsg(t){ msg.textContent=t; msg.className='msg bad'; }
+  function reset(){ btn.disabled=false; btn.textContent='Submit feedback'; }
+
+  form.addEventListener('change', function(e){
+    if(e.target.name==='subscribe'){
+      var on = (val('subscribe')==='Yes' || val('subscribe')==='Maybe');
+      $('freqCard').style.display = on ? 'block' : 'none';
+      if(!on){ [].forEach.call(form.querySelectorAll('input[name="frequency"]'), function(r){r.checked=false}); }
+    }
+    var card = e.target.closest('.card'); if(card) card.classList.remove('err');
+  });
+  form.addEventListener('input', function(e){ var c=e.target.closest('.card'); if(c) c.classList.remove('err'); });
+
+  function validate(){
+    var first=null, text='';
+    function fail(q, t){ var el=mark(q,true); if(!first){first=el; text=t;} }
+    ['name','contact','taste','orderAgain','recommend'].forEach(function(q){mark(q,false)});
+
+    var name=$('name').value.trim(), email=$('email').value.trim(), phone=$('phone').value.trim();
+    if(!name) fail('name','Please enter your name.');
+    var digits = phone.replace(/\D/g,'');
+    if(!email && !phone) fail('contact','Please enter your email or phone number (at least one).');
+    else {
+      if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) fail('contact','Please enter a valid email address.');
+      if(phone && (!/^[0-9+\-\s()]+$/.test(phone) || digits.length<10 || digits.length>13)) fail('contact','Please enter a valid 10-digit phone number.');
+    }
+    if(!val('taste')) fail('taste','Please rate the overall taste.');
+    if(!val('orderAgain')) fail('orderAgain','Please tell us if you would order this bowl again.');
+    if(!val('recommend')) fail('recommend','Please tell us if you would recommend SUTO.');
+    if(first){ showMsg(text); first.scrollIntoView({behavior:'smooth',block:'center'}); return false; }
+    msg.className='msg'; return true;
+  }
+
+  function handle(r){
+    if(r && r.ok){
+      $('formView').style.display='none'; $('thanks').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    } else {
+      reset();
+      showMsg((r && r.error) || 'Something went wrong. Please try again.');
+      if(r && r.duplicate){ mark('contact',true); }
+      msg.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!validate()) return;
+    btn.disabled=true; btn.textContent='Submitting...';
+    var payload = {
+      name:$('name').value, email:$('email').value, phone:$('phone').value,
+      taste:val('taste'), portion:val('portion'), freshness:val('freshness'), flavour:val('flavour'), dressing:val('dressing'),
+      liked:$('liked').value, improve:$('improve').value, orderAgain:val('orderAgain'),
+      subscribe:val('subscribe'), frequency:val('frequency'), recommend:val('recommend'),
+      comments:$('comments').value, website:$('website').value
+    };
+    fetch(ENDPOINT, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) })
+      .then(function(r){ return r.json(); })
+      .then(handle)
+      .catch(function(){
+        reset();
+        showMsg('We could not save your response. Please check your connection and try again.');
+      });
+  });
+})();
+</script>
+</body>
+</html>
